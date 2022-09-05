@@ -4,8 +4,10 @@ class PostModel {
   final String? createdDate;
   final String? id;
   final String? imageUrl;
+  final String? imageName;
   PostModel(
-      {required this.createdDate,
+      {required this.imageName,
+      required this.createdDate,
       required this.description,
       required this.id,
       required this.imageUrl,
@@ -15,6 +17,7 @@ class PostModel {
         description = json['description'],
         imageUrl = json['imageUrl'],
         createdDate = json['createdDate'],
+        imageName = json['imageName'],
         username = json['username'];
   Map<String, dynamic> toJson() {
     return {
@@ -22,7 +25,8 @@ class PostModel {
       'id': id,
       'imageUrl': imageUrl,
       'username': username,
-      'createdDate': createdDate
+      'createdDate': createdDate,
+      'imageName': imageName
     };
   }
 
@@ -32,11 +36,13 @@ class PostModel {
     String? createdDate,
     String? id,
     String? imageUrl,
+    String? imageName,
   }) =>
       PostModel(
           createdDate: createdDate ?? this.createdDate,
           description: description ?? this.description,
           id: id ?? this.id,
           imageUrl: imageUrl ?? this.imageUrl,
+          imageName: imageName ?? this.imageName,
           username: username ?? this.username);
 }

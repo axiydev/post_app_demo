@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:post_app_demo/model/post_model.dart';
 import 'package:post_app_demo/pages/create_post/create_post_page.dart';
 import 'package:post_app_demo/service/firestore_src/cloud_firestore_src.dart';
+import 'package:post_app_demo/service/storage_src/cld_storage.dart';
 import 'package:post_app_demo/util/logger.dart';
 
 class PostsPage extends StatefulWidget {
@@ -19,7 +21,7 @@ class PostsPage extends StatefulWidget {
 
 class _PostsPageState extends State<PostsPage> {
   final _firestoreService = FireStoreService(FirebaseFirestore.instance);
-
+  final _storageService = CloudStorageSrc(FirebaseStorage.instance);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +44,8 @@ class _PostsPageState extends State<PostsPage> {
             itemBuilder: (ctx, snapshot) {
               final post =
                   PostModel.fromJson(jsonDecode(json.encode(snapshot.data())));
-              Log.log(post.toJson());
+              Log.log(snapshot.id);
+
               return Card(
                   child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -51,12 +54,24 @@ class _PostsPageState extends State<PostsPage> {
                     dense: true,
                     title: Text(post.username!),
                     subtitle: Text(post.description!),
+                    trailing: post.username == 'dev'
+                        ? IconButton(
+                            onPressed: () async {
+                              await _firestoreService.removePost(
+                                  post, snapshot.id);
+                              await _storageService.removeImage(post);
+                            },
+                            icon: const Icon(Icons.delete),
+                          )
+                        : null,
                   ),
-                  CachedNetworkImage(
-                    imageUrl: post.imageUrl!,
-                    height: 200,
-                    fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width,
+                  InteractiveViewer(
+                    child: CachedNetworkImage(
+                      imageUrl: post.imageUrl!,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width,
+                    ),
                   )
                 ],
               ));

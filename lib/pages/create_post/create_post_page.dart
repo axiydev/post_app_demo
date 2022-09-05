@@ -58,13 +58,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
       _isLoading = true;
       setState(() {});
       if (_description.text.isEmpty) return;
-      final String? imageUrl = await _cloudStorageSrc.uploadImage(_imageFile);
+      final imageName = DateTime.now();
+      final String? imageUrl =
+          await _cloudStorageSrc.uploadImage(_imageFile, 'image$imageName');
       PostModel myPost = PostModel(
           imageUrl: imageUrl,
-          createdDate: DateTime.now().toString(),
+          createdDate: imageName.toString(),
           description: _description.text,
           id: const Uuid().v1(),
-          username: 'Flutter dev');
+          username: 'dev',
+          imageName: 'image$imageName');
       Log.log(imageUrl);
       await _fireStoreService.createPost(myPost);
       _isLoading = false;
