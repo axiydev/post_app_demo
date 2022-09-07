@@ -75,6 +75,9 @@ class _PostsPageState extends State<PostsPage> {
                 .collection('posts')
                 .orderBy('createdDate', descending: false),
             itemBuilder: (ctx, snapshot) {
+              if (!snapshot.exists) {
+                return const CupertinoActivityIndicator();
+              }
               final post =
                   PostModel.fromJson(jsonDecode(json.encode(snapshot.data())));
               Log.log(snapshot.id);
@@ -85,8 +88,8 @@ class _PostsPageState extends State<PostsPage> {
                 children: [
                   ListTile(
                     dense: true,
-                    title: Text(post.username!),
-                    subtitle: Text(post.description!),
+                    title: Text(post.username ?? 'User'),
+                    subtitle: Text(post.description ?? 'description'),
                     trailing: post.userId == _uid && _uid != ''
                         ? IconButton(
                             onPressed: () async {
@@ -101,6 +104,14 @@ class _PostsPageState extends State<PostsPage> {
                   InteractiveViewer(
                     child: CachedNetworkImage(
                       imageUrl: post.imageUrl!,
+                      errorWidget: (context, image, st) => Container(
+                        color: Colors.blue,
+                        height: 200,
+                      ),
+                      placeholder: (context, im) => Container(
+                        color: Colors.blue,
+                        height: 200,
+                      ),
                       height: 200,
                       fit: BoxFit.cover,
                       width: MediaQuery.of(context).size.width,
