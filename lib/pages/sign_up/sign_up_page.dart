@@ -49,12 +49,14 @@ class _SignUpPageState extends State<SignUpPage> {
           uid: userCredential.user!.uid);
       await _firestoreSrc.createCollectionData(collection: 'users', user: user);
       Log.log(userCredential.additionalUserInfo!.username);
-      Consts.keyMessanger!.currentState!.showSnackBar(
-          const SnackBar(content: Text('User tizimda qayd etildi')));
-      setState(() {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(MyAppRouter.postPage, (route) => false);
-      });
+      if (userCredential.user != null) {
+        Consts.keyMessanger!.currentState!.showSnackBar(
+            const SnackBar(content: Text('User tizimda qayd etildi')));
+        setState(() {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(MyAppRouter.postPage, (route) => false);
+        });
+      }
     } catch (e) {
       Log.log(e);
     }
