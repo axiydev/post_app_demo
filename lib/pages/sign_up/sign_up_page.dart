@@ -35,6 +35,33 @@ class _SignUpPageState extends State<SignUpPage> {
         password.isEmpty ||
         confirmPassword.isEmpty ||
         _nameController.text.isEmpty) return;
+
+    if (!email.endsWith('@gmail.com') || password.length < 6) {
+      showCupertinoDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) => CupertinoAlertDialog(
+          title: const Text('input error'),
+          content: const Text(
+              r'email @gmail.com bilan tugamadi yoki password 6 tadan kam'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     if (password != confirmPassword) return;
     try {
       UserCredential? userCredential =

@@ -18,6 +18,7 @@ class CustomTextfield extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoTextField(
       controller: controller,
+      clearButtonMode: OverlayVisibilityMode.editing,
       textInputAction: textInputAction,
       placeholder: placeholder,
       obscureText: obscureText!,

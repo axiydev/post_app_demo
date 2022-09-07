@@ -25,6 +25,32 @@ class _SignInPageState extends State<SignInPage> {
     String? password = _passwordController.text;
     FocusScope.of(context).unfocus();
     if (email.isEmpty || password.isEmpty) return;
+    if (!email.endsWith('@gmail.com') || password.length < 6) {
+      showCupertinoDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) => CupertinoAlertDialog(
+          title: const Text('input error'),
+          content: const Text(
+              r'email $gmail.com bilan tugamadi yoki password 6 tadan kam'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     try {
       final UserCredential? userCredential =
           await _authService.loginUser(email: email, password: password);
