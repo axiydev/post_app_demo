@@ -3,6 +3,7 @@ class PostModel {
   final String? description;
   final String? createdDate;
   final String? id;
+  final String? userId;
   final String? imageUrl;
   final String? imageName;
   PostModel(
@@ -10,10 +11,12 @@ class PostModel {
       required this.createdDate,
       required this.description,
       required this.id,
+      required this.userId,
       required this.imageUrl,
       required this.username});
   PostModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
+        userId = json['userId'],
         description = json['description'],
         imageUrl = json['imageUrl'],
         createdDate = json['createdDate'],
@@ -23,6 +26,7 @@ class PostModel {
     return {
       'description': description,
       'id': id,
+      'userId': userId,
       'imageUrl': imageUrl,
       'username': username,
       'createdDate': createdDate,
@@ -36,12 +40,14 @@ class PostModel {
     String? createdDate,
     String? id,
     String? imageUrl,
+    String? userId,
     String? imageName,
   }) =>
       PostModel(
           createdDate: createdDate ?? this.createdDate,
           description: description ?? this.description,
           id: id ?? this.id,
+          userId: userId ?? this.userId,
           imageUrl: imageUrl ?? this.imageUrl,
           imageName: imageName ?? this.imageName,
           username: username ?? this.username);

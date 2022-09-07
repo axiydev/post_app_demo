@@ -21,6 +21,8 @@ dependencies:
   cached_network_image: ^3.2.1
   image_picker: ^0.8.5+3
   uuid: ^3.0.6
+  shared_preferences: ^2.0.15
+  firebase_auth: ^3.7.0
 
 dev_dependencies:
   flutter_test:

@@ -9,8 +9,10 @@ import 'package:flutterfire_ui/firestore.dart';
 import 'package:post_app_demo/model/post_model.dart';
 import 'package:post_app_demo/pages/create_post/create_post_page.dart';
 import 'package:post_app_demo/service/firestore_src/cloud_firestore_src.dart';
+import 'package:post_app_demo/service/prefs/prefs.dart';
 import 'package:post_app_demo/service/storage_src/cld_storage.dart';
 import 'package:post_app_demo/util/logger.dart';
+import 'package:post_app_demo/utils/app_route_src.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({Key? key}) : super(key: key);
@@ -22,11 +24,42 @@ class PostsPage extends StatefulWidget {
 class _PostsPageState extends State<PostsPage> {
   final _firestoreService = FireStoreService(FirebaseFirestore.instance);
   final _storageService = CloudStorageSrc(FirebaseStorage.instance);
+  final _prefs = Prefs();
+  String? _uid = '';
+
+  @override
+  void initState() {
+    getUid();
+    super.initState();
+  }
+
+  getUid() async {
+    final prefLocal = await _prefs.getData(key: 'uid');
+    Log.log(prefLocal);
+    _uid = prefLocal;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('posts'),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                final isLoggedIn = await _prefs.deleteData(key: 'uid');
+                if (isLoggedIn) {
+                  Consts.keyMessanger!.currentState!.showSnackBar(
+                      const SnackBar(content: Text('Logout succesfully')));
+                  setState(() {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        MyAppRouter.signIn, (route) => false);
+                  });
+                }
+              },
+              icon: const Icon(Icons.logout))
+        ],
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -45,7 +78,7 @@ class _PostsPageState extends State<PostsPage> {
               final post =
                   PostModel.fromJson(jsonDecode(json.encode(snapshot.data())));
               Log.log(snapshot.id);
-
+              Log.log(_uid);
               return Card(
                   child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -54,7 +87,7 @@ class _PostsPageState extends State<PostsPage> {
                     dense: true,
                     title: Text(post.username!),
                     subtitle: Text(post.description!),
-                    trailing: post.username == 'dev'
+                    trailing: post.userId == _uid && _uid != ''
                         ? IconButton(
                             onPressed: () async {
                               await _firestoreService.removePost(

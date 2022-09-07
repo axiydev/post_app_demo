@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:post_app_demo/model/post_model.dart';
 import 'package:post_app_demo/service/firestore_src/cloud_firestore_src.dart';
 import 'package:post_app_demo/service/pick/img_pick.dart';
+import 'package:post_app_demo/service/prefs/prefs.dart';
 import 'package:post_app_demo/service/storage_src/cld_storage.dart';
 import 'package:post_app_demo/util/logger.dart';
 import 'package:uuid/uuid.dart';
@@ -25,6 +26,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       FireStoreService(FirebaseFirestore.instance);
   final CloudStorageSrc _cloudStorageSrc =
       CloudStorageSrc(FirebaseStorage.instance);
+  final _prefs = Prefs();
   bool? _isLoading = false;
   io.File? _imageFile;
 
@@ -56,6 +58,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Future<void> uploadDataToFirebase() async {
     try {
       _isLoading = true;
+      FocusScope.of(context).unfocus();
       setState(() {});
       if (_description.text.isEmpty) return;
       final imageName = DateTime.now();
@@ -66,7 +69,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
           createdDate: imageName.toString(),
           description: _description.text,
           id: const Uuid().v1(),
-          username: 'dev',
+          userId: await _prefs.getData(key: 'uid'),
+          username: await _prefs.getData(key: 'name'),
           imageName: 'image$imageName');
       Log.log(imageUrl);
       await _fireStoreService.createPost(myPost);
